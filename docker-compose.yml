@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # MLflow Tracking Server for model version control and parameter tracking
+  mlflow:
+    build: .
+    container_name: olist_mlflow_server
+    ports:
+      - "5050:5000"
+    volumes:
+      - ./mlruns:/app/mlruns
+      - ./mlflow.db:/app/mlflow.db
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+
+  # FastAPI backend service to compute segments and predict churn probability
+  api:
+    build: .
+    container_name: olist_fastapi_backend
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./reports:/app/reports
+    command: uvicorn 4_api:app --host 0.0.0.0 --port 8000
+    depends_on:
+      - mlflow
+
+  # Streamlit frontend dashboard for user interactions and visualizations
+  dashboard:
+    build: .
+    container_name: olist_streamlit_dashboard
+    ports:
+      - "8502:8501"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./reports:/app/reports
+    environment:
+      - API_URL=http://api:8000
+    command: streamlit run 5_dashboard.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      - api
