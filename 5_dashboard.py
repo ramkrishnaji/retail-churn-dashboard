@@ -449,7 +449,7 @@ with tab3:
         # Display the saved SHAP summary image
         shap_img_path = "reports/shap_importance.png"
         if os.path.exists(shap_img_path):
-            st.image(shap_img_path, caption="SHAP Summary Plot (XGBoost)", use_column_width=True)
+            st.image(shap_img_path, caption="SHAP Summary Plot (XGBoost)", use_container_width=True)
         else:
             st.warning("⚠️ SHAP plot image not found. Please run `3_churn_prediction.py` to generate it.")
             
@@ -480,6 +480,6 @@ with tab3:
         # Show model metrics comparison image if it exists
         model_img_path = "reports/model_comparison.png"
         if os.path.exists(model_img_path):
-            st.image(model_img_path, caption="Logistic Regression vs Random Forest vs XGBoost Curves", use_column_width=True)
+            st.image(model_img_path, caption="Logistic Regression vs Random Forest vs XGBoost Curves", use_container_width=True)
         else:
             st.info("Performance comparison plots will show here once `3_churn_prediction.py` is completed.")
